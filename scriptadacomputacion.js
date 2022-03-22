@@ -187,6 +187,10 @@ console.log("ventas vendedora :", ventasVendedora("Grace")); //1220
 //6.componenteMasVendido(): Devuelve el nombre del componente que más ventas tuvo historicamente.
 // El dato de la cantidad de ventas es el que indica la función cantidadVentasComponente.
 
+//se retorna el NOMBRE del componente mas vendido
+//cantidadVentasComponente retorna un numero = totalVentas , recibe un string componente
+//la funcion recibe una Variable Global --- porque Ventas tiene un scope Global
+
 const componenteMasVendido = () => {
   const arrayComponente = [];
 
@@ -234,9 +238,12 @@ const ventasSucursal = (sucursal) => {
 console.log("ventas x sucursal: ", ventasSucursal("Centro"));
 console.log(ventasSucursal("Caballito"));
 
+//9. Las funciones ventasSucursal y ventasVendedora tienen mucho código en común,
+//ya que es la misma funcionalidad pero trabajando con una propiedad distinta.
+//Entonces, ¿cómo harías para que ambas funciones reutilicen código y evitemos repetir?
+
 //10. Crear la función sucursalDelMes(mes, anio), que se le pasa dos parámetros numéricos,
-//(mes, anio) y devuelve el nombre de la sucursal que más vendió en plata en el mes. No cantidad de ventas, sino importe total de las ventas. 
-//El importe de una venta es el que indica la función precioMaquina. El mes es un número entero que va desde el 1 (enero) hasta el 12 (diciembre).
+//(mes, anio) y devuelve el nombre de la sucursal que más vendió en plata en el mes. No cantidad de ventas, sino importe total de las ventas. El importe de una venta es el que indica la función precioMaquina. El mes es un número entero que va desde el 1 (enero) hasta el 12 (diciembre).
 
 const sucursalDelMes = (mes, anio) => {
   const totalSucursalXmes = [];
@@ -276,6 +283,7 @@ console.log(sucursalDelMes(1, 2019)); // "Caballito"
 /****************************************DOM****************************************************/
 ////////////////////////////////////MODAL BULMA/////////////////////////////////////////////////
 
+////////////////////Traemos los ID del html///////////////////////
 const objetoNuevaVenta = document.getElementById("tablaVentas");
 const btnNuevaVenta = document.getElementById("btn-nueva-vta");
 const crearModal = document.getElementById("modal-create");
@@ -292,6 +300,8 @@ cancelarNuevaVenta.addEventListener("click", () =>{
   closeModal(crearModal);
 })
 
+//VARIABLES GLOBALES
+//let seleccionComponentes = [];
 
 ////////Funciones del modal//////////////////////
 function openModal($el) {
@@ -308,7 +318,7 @@ function closeAllModals() {
   });
 }
 
-
+// //Añadir un evento de clic en los botones para abrir un modal específico
 (document.querySelectorAll(".js-modal-trigger") || []).forEach(($trigger) => {
   const modal = $trigger.dataset.target;
   const $target = document.getElementById(modal);
@@ -320,6 +330,7 @@ function closeAllModals() {
   });
 });
 
+//AÑADIR UN EVENTO DEL CLICK EN VARIOS ELEMENTOS HIJOS PARA CERRAR EL MODAL PADRE.
 (
   document.querySelectorAll(
     ".modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button"
@@ -342,10 +353,10 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-
+//FUNCIÓN PARA GENERAR ID DINÁMICAMENTE
 const generateId = () => Math.ceil(Math.random() * 100_000);
 
-
+/////FUNCIÓN PARA PARSEAR LA FECHA
 const parseDateToString = (date) => {
   let day = `0${date.getDate()}`.slice(-2);
   const month = `0${date.getMonth() + 1}`.slice(-2);
@@ -358,7 +369,22 @@ const parseDateToStringDom = (date) => {
   return `${day}/${month}/${date.getFullYear()}`;
 };
 
-const capturarComponentes = (select) => {
+// function capturarComponentes(lista) {
+//   let seleccionComponentes=[]
+//   let elegido = lista.value
+//   //reconoce la lista y las opciones pero no hace el push de cada uno de los seleccionados
+//   //for(const option of lista.options){
+
+//     //if(option.selected){  //reconoce el ultimo valor
+//       seleccionComponentes.push(elegido);
+//       console.log("valor", elegido)
+//   //  }
+//  // }
+//   console.log("selecc compo", seleccionComponentes)
+//   return seleccionComponentes;
+// }
+
+function capturarComponentes(select) {
   let seleccionComponentes = [];
   let options = select && select.options;
   console.log("opciones", options);
@@ -372,15 +398,15 @@ const capturarComponentes = (select) => {
   return seleccionComponentes;
 }
 
-const capturarDatos = () => {
-  const eleccionVendedora = document.getElementById("nombre-vendedora");
-  const eleccionSucursal = document.getElementById("seleccion-sucursal");
-  const eleccionFecha = document.getElementById("seleccion-fecha");
-  const selectComponentes = document.getElementById("seleccion-componentes");
+function capturarDatos() {
+  let eleccionVendedora = document.getElementById("nombre-vendedora");
+  let eleccionSucursal = document.getElementById("seleccion-sucursal");
+  let eleccionFecha = document.getElementById("seleccion-fecha");
+  let selectComponentes = document.getElementById("seleccion-componentes");
 
-  const componentesSelec = capturarComponentes(selectComponentes);
-  const componentesPrecio = precioMaquina(componentesSelec);
-  const  idRandom = generateId();
+  let componentesSelec = capturarComponentes(selectComponentes);
+  let componentesPrecio = precioMaquina(componentesSelec);
+  let idRandom = generateId();
 
   let objeto = {
     id: idRandom,
@@ -449,7 +475,8 @@ const vendedoraMejorVenta = () => {
   return nombreVendedora;
 };
 
-const renderTabla = () => {
+//FUNCIÓN QUE IMPRIME EN EL HTML
+function renderTabla() {
   let plantilla = "";
 
   for (const item of ventas) {
@@ -476,33 +503,38 @@ const renderTabla = () => {
   mejorVendedora();
 }
 
-const inicializar = () =>{
+function inicializar() {
   renderTabla();
   mostrarvtasxSucursal();
   nombreComponenteMasVendido();
   mejorVendedora();
 }
 
+//GUARDA LOS COMPONENTES SELECCIONADOS EN LA VENTA
+// selectComponentes.addEventListener("change", () => {
+//   capturarComponentes(elemento);
+// });
+
 cerrarModal.addEventListener("click", () => {
   closeModal(crearModal);
 });
 
-
+//SE CREA LA VENTA
 crearVenta.addEventListener("click", () => {
   capturarDatos();
   //seleccionComponentes = [];
   closeModal(crearModal);
 });
 
+//SE CIERRA EL MODAL UNA VEZ QUE SE AGREGA LA VENTA
 btnNuevaVenta.addEventListener("click", () => {
   openModal(crearModal);
 });
 
-
 //DATOS PRE CARGADOS DE VENTA POR SUCURSAL
 const ventasPorSucursal = document.getElementById("tablaSucursal");
 
-const mostrarvtasxSucursal = () => {
+function mostrarvtasxSucursal() {
   let mostrarResultados = "";
 
   for (const sucursal of sucursales) {
@@ -517,6 +549,9 @@ const mostrarvtasxSucursal = () => {
   ventasPorSucursal.innerHTML = mostrarResultados;
 }
 
+//FUNCION PARA PRODUCTOS ESTRELLA: COMPONENTE MÁS VENDIDO
+//componenteMasVendido()devuelve el nombre del componente mas vendido
+
 const nombreComponenteMasVendido = () => {
   productoEstrella.innerHTML = `Productos estrella: ${componenteMasVendido()}`;
 };
@@ -527,7 +562,6 @@ const mejorVendedora = () => {
 };
 
 //////////////////////////EDITAR VENTA//////////////////////
-
 const btnCerrarEditar = document.getElementById("cerrar-modal-editar");//este es el boton cancelar 
 const editarModal = document.getElementById("editar-modal");
 const editarVenta = document.getElementById("editar-venta");
@@ -550,7 +584,7 @@ const openEditModal = (id) => {
   openModal($("#editar-modal"));
 };
 
-
+//boton guardar edicion
 $("#editar-venta").addEventListener("click", () => {
   const id = Number($("#editarId").value);
   const nombreVendedora = $("#editarNombre").value;
